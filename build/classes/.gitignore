@@ -1,4 +1,5 @@
-/Controllers/
-/DAO/
-/Models/
 /Util/
+/Models/
+/DAO/
+/Controller/
+/Controllers/

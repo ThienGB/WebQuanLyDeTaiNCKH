@@ -1,5 +1,7 @@
 package Models;
 
+import java.sql.Date;
+
 public class DeXuatDeTai {
 	private int MaDeXuatDeTai;
 	private String MaChuNhiem;
@@ -8,8 +10,20 @@ public class DeXuatDeTai {
 	private byte[] FileMoTaDeTai;
 	private String TrangThai;
 	private String GhiChu;
+	private Date NgayDeXuat;
+
 	public DeXuatDeTai(int maDeXuatDeTai, String maChuNhiem, String tenDeTai, int kinhPhi, byte[] fileMoTaDeTai,
-			String trangThai, String ghiChu) {
+			Date ngayDeXuat) {
+		super();
+		MaDeXuatDeTai = maDeXuatDeTai;
+		MaChuNhiem = maChuNhiem;
+		TenDeTai = tenDeTai;
+		KinhPhi = kinhPhi;
+		FileMoTaDeTai = fileMoTaDeTai;
+		NgayDeXuat = ngayDeXuat;
+	}
+	public DeXuatDeTai(int maDeXuatDeTai, String maChuNhiem, String tenDeTai, int kinhPhi, byte[] fileMoTaDeTai,
+			String trangThai, String ghiChu, Date ngayDeXuat) {
 		super();
 		MaDeXuatDeTai = maDeXuatDeTai;
 		MaChuNhiem = maChuNhiem;
@@ -18,6 +32,7 @@ public class DeXuatDeTai {
 		FileMoTaDeTai = fileMoTaDeTai;
 		TrangThai = trangThai;
 		GhiChu = ghiChu;
+		NgayDeXuat = ngayDeXuat;
 	}
 	public DeXuatDeTai() {
 		super();
@@ -64,6 +79,11 @@ public class DeXuatDeTai {
 	public void setGhiChu(String ghiChu) {
 		GhiChu = ghiChu;
 	}
-	
-	
+	public Date getNgayDeXuat() {
+		return NgayDeXuat;
+	}
+	public void setNgayDeXuat(Date ngayDeXuat) {
+		NgayDeXuat = ngayDeXuat;
+	}
+
 }
