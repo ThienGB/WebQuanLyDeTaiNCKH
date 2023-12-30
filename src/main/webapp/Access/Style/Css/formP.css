@@ -245,3 +245,48 @@ The following are styles purely for the surroundings
 	display:flex;
 	margin-top:20px;
 }
+.TextArea {
+	width: 400px; /* Chiều rộng mặc định */
+	height: 250px; /* Chiều cao mặc định */
+	resize: none;
+	/* Cho phép chỉnh kích thước cả chiều rộng và chiều cao */
+	padding: 5px;
+}
+
+.btn_disable {
+	font-family: "Roboto", sans-serif;
+	text-transform: uppercase;
+	outline: 0 !important;
+	background: #ccc !important;
+	width: 100%;
+	border: 0;
+	padding: 15px;
+	color: #FFFFFF !important;
+	font-size: 14px;
+	-webkit-transition: all 0.3 ease;
+	transition: all 0.3 ease;
+	cursor: pointer;
+}
+
+.form-DoiMK button {
+	width: 300px;
+	margin-bottom: 20px;
+	display: block;
+}
+
+.form input {
+	font-family: "Roboto", sans-serif;
+	outline: 0;
+	background: #f2f2f2;
+	width: 350px !important;
+	border: 0;
+	margin: 0 0 15px;
+	padding: 15px;
+	box-sizing: border-box;
+	font-size: 14px;
+}
+
+.ThongBao {
+	display: block;
+	width: fit-content;
+}

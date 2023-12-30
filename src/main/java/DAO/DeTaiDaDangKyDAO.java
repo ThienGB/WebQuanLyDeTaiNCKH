@@ -10,6 +10,7 @@ import java.util.List;
 
 import Models.DangKyDeTai;
 import Models.DeTai;
+import Models.NopNghiemThu;
 import Models.ThamGiaDeTai;
 import Models.ThanhVienThamGiaDeTai;
 import Models.ThongTinTaiKhoan;
@@ -17,15 +18,19 @@ import Util.HandleExeption;
 import Util.JDBCUtil;
 
 public class DeTaiDaDangKyDAO {
-	private static final String DE_TAI_DA_DK = "SELECT * FROM nckh.dangkydetai where TrangThai='Đã duyệt';\r\n" + "";
-	private static final String DE_TAI_BY_MADT = "SELECT * FROM nckh.detai WHERE MaDeTai=?";
-	private static final String CHU_NHIEM_BY_MACN = "SELECT * FROM nckh.thongtintaikhoan WHERE Role='Chủ nhiệm' and MaTK=?";
-private static final String THANH_VIEN_NC_BY_MADTMATG = "SELECT  B.HoTen , A.VaiTro,A.MSSV FROM nckh.thamgiadetai A inner JOIN nckh.thongtinsinhvien B on A.MSSV=B.MSSV \r\n"
+	private static final String DE_TAI_DA_DK = "SELECT * FROM qldetainckh.dangkydetai where TrangThai='Đã duyệt';\r\n" + "";
+	private static final String DE_TAI_BY_MADT = "SELECT * FROM qldetainckh.detai WHERE MaDeTai=?";
+	private static final String CHU_NHIEM_BY_MACN = "SELECT * FROM qldetainckh.thongtintaikhoan WHERE Role='Chủ nhiệm' and MaTK=?";
+	private static final String THANH_VIEN_NC_BY_MADTMATG = "SELECT  B.HoTen , A.VaiTro,A.MSSV FROM qldetainckh.thamgiadetai A inner JOIN qldetainckh.thongtinsinhvien B on A.MSSV=B.MSSV \r\n"
 		+ "where MaDeTai=? and MaThoiGian=?";
 
-	private static final String DE_TAI_DA_DK_BY_MADON = "SELECT * FROM nckh.dangkydetai where TrangThai='Đã duyệt' and MaDon=?;\r\n"
+	private static final String DE_TAI_DA_DK_BY_MADON = "SELECT * FROM qldetainckh.dangkydetai where TrangThai='Đã duyệt' and MaDon=?;\r\n"
 			+ "";
-
+	private static final String LAY_FILE_NGHIEM_THU_BANG_MA = "SELECT FileBaoCao, HoSoLienQuan\r\n"
+			+ "FROM nopdetai inner join nghiemthu \r\n"
+			+ "on nopdetai.MaNopDeTai = nghiemthu.MaNopDeTai\r\n"
+			+ "where MaNghiemThu = ?";
+	
 	public List<DangKyDeTai> XemDeTaiDaDK() throws SQLException {
 		List<DangKyDeTai> ddk = new ArrayList<>();
 		try (Connection conn = JDBCUtil.getConnection();
@@ -107,7 +112,7 @@ private static final String THANH_VIEN_NC_BY_MADTMATG = "SELECT  B.HoTen , A.Vai
 			ResultSet rs = preparedStatement.executeQuery();
 
 			while (rs.next()) {
-				int MaTaiKhoan = rs.getInt(1);
+				String MaTaiKhoan = rs.getString(1);
 				String MatKhau = rs.getString(2);
 				String Role = rs.getString(3);
 				String HoTen = rs.getString(4);
@@ -151,5 +156,22 @@ private static final String THANH_VIEN_NC_BY_MADTMATG = "SELECT  B.HoTen , A.Vai
 			HandleExeption.printSQLException(e);
 		}
 		return ddk;
+	}
+	public NopNghiemThu LayFileNghiemThu(int MaNghiemThu) {
+		NopNghiemThu nopnghiemthu = new NopNghiemThu();
+		try (Connection connection = JDBCUtil.getConnection();
+				PreparedStatement preparedStatement = connection.prepareStatement(LAY_FILE_NGHIEM_THU_BANG_MA);) {
+			preparedStatement.setInt(1, MaNghiemThu);
+			System.out.print(preparedStatement);
+			ResultSet rs = preparedStatement.executeQuery();
+
+			while (rs.next()) {				
+				nopnghiemthu.setFileBaoCao(rs.getBytes(1));
+				nopnghiemthu.setHoSoLienQuan(rs.getBytes(2));
+			}
+		} catch (SQLException exception) {
+			HandleExeption.printSQLException(exception);
+		}
+		return nopnghiemthu;
 	}
 }

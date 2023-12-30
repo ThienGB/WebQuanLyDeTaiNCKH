@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.List;
 
 import javax.servlet.http.Part;
 import javax.servlet.RequestDispatcher;
@@ -24,6 +27,7 @@ import DAO.ThongBaoDAO;
 import Models.DangKyDeTai;
 import Models.DeTai;
 import Models.DeXuatDeTai;
+import Models.Khoa;
 import Models.NopDeTai;
 import Models.ThoiGianNCKH;
 import Models.ThongTinTaiKhoan;
@@ -67,6 +71,29 @@ public class DeTaiController extends HttpServlet {
 			break;
 		case "/quyetdinhduyet":
 			QuyetDinhDuyet(request, response);
+			break;
+		case "/themthoigian":
+			try {
+				ThemSuaThoiGian(request, response);
+			} catch (IOException | ServletException | ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+		case "/showthoigian":
+			ShowThoiGian(request, response);			
+			break;
+		case "/xoathoigian":
+			XoaThoiGian(request, response);
+			break;
+		case "/showkhoa":
+			ShowKhoa(request, response);			
+			break;
+		case "/xoakhoa":
+			XoaKhoa(request, response);
+			break;
+		case "/themkhoa":
+			ThemSuaKhoa(request, response);
 			break;
 		default:
 			System.out.println("df" );
@@ -126,7 +153,7 @@ public class DeTaiController extends HttpServlet {
 	}	
 	public void ShowNopDeTai (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		String MaDon = request.getParameter("MaDon");
-		MaDon = "2";		
+		//MaDon = "2";		
 		DangKyDeTai dangkydetai = detaiDAO.LayDangKyDeTaiBangMa(Integer.parseInt(MaDon));		
 		DeTai detai = detaiDAO.LayDeTaiBangMa(dangkydetai.getMaDeTai());	
 		ThoiGianNCKH thoigian = thoigianNCKHDAO.LayThoiGianDK(dangkydetai.getMaThoiGian());
@@ -146,11 +173,9 @@ public class DeTaiController extends HttpServlet {
 	}
 	public void ShowQuyetDinhDuyet (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, ClassNotFoundException {
 		LoginDAO loginDAO = new LoginDAO();
-		String MaDon = request.getParameter("MaDon");
-		MaDon = "";
-		String MaDeXuatDeTai = request.getParameter("MaDeXuatDeTai");
-		MaDeXuatDeTai = "1";
-		if (!MaDon.equals("")){
+		String MaDon = request.getParameter("MaDon1");
+		String MaDeXuatDeTai = request.getParameter("MaDeXuatDeTai1");
+		if (MaDon != null){
 			DangKyDeTai dangkydetai = detaiDAO.LayDangKyDeTaiBangMa(Integer.parseInt(MaDon));		
 			DeTai detai = detaiDAO.LayDeTaiBangMa(dangkydetai.getMaDeTai());
 			ThongTinTaiKhoan thongtintaikhoan = loginDAO.KiemTraTaiKhoan(dangkydetai.getMaChuNhiem());
@@ -222,5 +247,95 @@ public class DeTaiController extends HttpServlet {
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/TaoThongBao.jsp");
 		dispatcher.forward(request, response);				
 	}	
+	
+	public void ThemSuaThoiGian (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, ParseException {
+		request.removeAttribute("err");
+		request.removeAttribute("suc");
+		String MaThoiGian = request.getParameter("mathoigian");	
+		String NgayMoDKstr = request.getParameter("ngaymo");
+		String NgayKetThucDKstr = request.getParameter("ngayketthuc");
+		String NgayNopstr = request.getParameter("ngaynop");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		java.sql.Date NgayMoDK = new java.sql.Date(dateFormat.parse(NgayMoDKstr).getTime());
+		java.sql.Date NgayKetThucDK = new java.sql.Date(dateFormat.parse(NgayKetThucDKstr).getTime());
+		java.sql.Date NgayNop = new java.sql.Date(dateFormat.parse(NgayNopstr).getTime());
+		if (NgayMoDK.after(NgayKetThucDK) || NgayKetThucDK.after(NgayNop)) {
+			request.setAttribute("err", "Thời gian mở phải trước thời gian kết thúc và nộp, thời gian kết thúc phải trước thời gian nộp");
+		}
+		else if (MaThoiGian.equals("")){
+			thoigianNCKHDAO.TaoThoiGian(NgayMoDK, NgayKetThucDK, NgayNop);
+			request.setAttribute("suc", "Thêm thành công");
+		}
+		else {
+			thoigianNCKHDAO.SuaThoiGian(MaThoiGian, NgayMoDK, NgayKetThucDK, NgayNop);
+			request.setAttribute("suc", "Sửa thành công");
+		}		
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/DeTai/showthoigian");
+		dispatcher.forward(request, response);				
+	}
+	
+	public void XoaThoiGian (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		request.removeAttribute("err");
+		request.removeAttribute("suc");
+		String MaThoiGian = request.getParameter("mathoigianNC");	
+		if (!thoigianNCKHDAO.XoaThoiGian(MaThoiGian)) {
+			request.setAttribute("err", "Xóa thất bại do thời gian này đã có người NCKH");
+		}
+		else {			
+			request.setAttribute("suc", "Xóa thành công");
+		}		
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/DeTai/showthoigian");
+		dispatcher.forward(request, response);				
+	}
+	public void ShowThoiGian (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
+		List<ThoiGianNCKH> listthoigian = thoigianNCKHDAO.LayToanBoThoiGian();
+		request.setAttribute("listthoigian", listthoigian);
+			
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/QuanLyThoiGian.jsp");
+		dispatcher.forward(request, response);				
+	}
+	public void ShowKhoa (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
+		LoginDAO loginDAO = new LoginDAO();
+		List <Khoa> listkhoa = loginDAO.LayKhoa();
+		request.setAttribute("listkhoa", listkhoa);
+			
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/QuanLyKhoa.jsp");
+		dispatcher.forward(request, response);				
+	}
+	public void XoaKhoa (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		request.removeAttribute("err");
+		request.removeAttribute("suc");
+		String MaKhoa = request.getParameter("makhoalist");	
+		if (!thoigianNCKHDAO.XoaKhoa(MaKhoa)) {
+			request.setAttribute("err", "Xóa thất bại do khoa này đang có người");
+		}
+		else {			
+			request.setAttribute("suc", "Xóa thành công");
+		}		
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/DeTai/showkhoa");
+		dispatcher.forward(request, response);				
+	}
+	public void ThemSuaKhoa (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		request.removeAttribute("err");
+		request.removeAttribute("suc");
+		String MaKhoa = request.getParameter("makhoa");	
+		String TenKhoa = request.getParameter("tenkhoa");
+		String Loai = request.getParameter("loai");
+		if (Loai.equals("them")) {
+			if (!thoigianNCKHDAO.TaoKhoa(MaKhoa, TenKhoa)) {
+				request.setAttribute("err", "Mã khoa đã tồn tại");
+			}
+			else {
+				request.setAttribute("suc", "Thêm thành công");				
+			}
+		}
+		else {
+			thoigianNCKHDAO.SuaKhoa(MaKhoa, TenKhoa);
+			request.setAttribute("suc", "Sửa thành công");
+		}
+	
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/DeTai/showkhoa");
+		dispatcher.forward(request, response);				
+	}
 
 }

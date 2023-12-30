@@ -25,11 +25,10 @@
 </head>
 <body>
 
-	<jsp:include page="LeftSideBar.jsp" />
+	<jsp:include page="Components/LeftSideBarPhongQLDTNCKH.jsp" />
 	<div class="container-main">
-		<jsp:include page="NavBar.jsp" />
+		<jsp:include page="Components/NavBar.jsp" />
 		<!--  IMPORT CODE PHẦN NÀY -->
-		<a href="<%=request.getContextPath()%>/quanlydetai/new"> Nhan di</a>
 		<div class="main_content">
 			<div class="form form-DeTaiCN">
 				<form class="login-form">
@@ -52,6 +51,8 @@
 
 							<c:forEach var="DeTai" items="${listDeTai}">
 								<tr onclick="changeBackgroundColor(this)">
+								<input style="display: none" name="maDT"
+												value="${DeTai.getMaDeTai()}">
 									<td><p>
 											<c:out value="${DeTai.getMaDeTai()}" />
 										</p></td>
@@ -61,7 +62,8 @@
 									<td><p>
 											<c:out value="${DeTai.getKinhPhi()}" />
 										</p></td>
-									<td><a href=""> Download</a></td>
+									<td><a
+										href="<%=request.getContextPath()%>/download/fileMoTa?maDT=${DeTai.getMaDeTai()}">Download</a></td>
 									<td><p>
 											<c:out value="${DeTai.getTrangThai()}" />
 										</p></td>
@@ -77,7 +79,8 @@
 				<button onclick=" toggleHideBox('Sửa đề tài');" disabled class="btn_disable" id="btn_sua">SỬA ĐỀ TÀI</button>
 				<form style="width: 300px; display: inline-block;" 
 				action="<%=request.getContextPath()%>/quanlydetai/delete"
-				accept-charset="UTF-8" method="POST">
+				accept-charset="UTF-8" method="POST"
+				enctype="multipart/form-data">
 				<input type="hidden" id="madetaiInput" name="madetai" />
 					<button disabled class="btn_disable" id="btn_xoa">XÓA ĐỀ TÀI</button>
 				</form>
@@ -85,18 +88,19 @@
 				<div class="hide-list" id="hide-box" style="display: none;">
 					<div class="SV" style="flex: 1;">
 						<h2 id="heading"></h2>
-						<form  id = "myform"  method="post">
+						<form  id = "myform"  method="post" enctype="multipart/form-data">
 							<input type="hidden" id="madetaiInput1" name="madetai" />
 							<p>Tên đề tài</p>
 							<input id="tenDeTaiInput" type="text" placeholder="Tên đề tài" name="tendetai" required/>
 							<p>Kinh phí</p>
 							<input id="kinhPhiInput" type="text" placeholder="Kinh phí" name="kinhphi" required/>
 							<p>File mô tả</p>
-							<input id="fileMoTaInput" type="file" placeholder="Chọn tệp" name="chontep" />
+							<input id="fileMoTaInput" type="file" placeholder="Chọn tệp" name="file" />
 							<p>Trạng thái</p>
 							<select id="trangThaiInput" class="select"  name="trangthai" required>
 								<option value="đã đăng ký">đã đăng ký</option>
 								<option value="chưa đăng ký">chưa đăng ký</option>
+								<option value="trống">trống</option>
 							</select>
 							<button id="buttonAdd" type="submit"></button>
 						</form>

@@ -23,12 +23,13 @@
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 <body>
-	<jsp:include page="LeftSideBar.jsp" />
+<%
+	String err = (String) request.getAttribute("err");
+%>
+	<jsp:include page="Components/LeftSideBar.jsp" />
 	<div class="container-main">
-		<jsp:include page="NavBar.jsp" />
+		<jsp:include page="Components/NavBar.jsp" />
 		<!--  IMPORT CODE PHẦN NÀY -->
-		<a href="<%=request.getContextPath()%>/dangkydetai/new"> Nhan
-			di</a>
 		<div class="main_content">
 			<div class="form form-DeTaiCN">
 				<form class="login-form" action="<%=request.getContextPath()%>/dangkydetai/dangky"
@@ -38,7 +39,12 @@
 						<i class="fa fa-refresh" aria-hidden="true"></i>
 					</div>
 					<hr></hr>
-
+<%
+ if (err != null) {
+ %>
+									<div class="error-message"><%=err%></div> <%
+ }
+ %>
 					<div class="table-DeTai">
 						<table id="myTable">
 							<tr class="columns-title">
@@ -60,7 +66,8 @@
 									<td><p>
 											<c:out value="${DeTai.getKinhPhi()}" />
 										</p></td>
-									<td><a href=""> Download</a></td>
+									<td><a
+										href="<%=request.getContextPath()%>/download/fileMoTa?maDT=${DeTai.getMaDeTai()}">Download</a></td>
 
 									<td>
 											<input type="radio" name="chon">
@@ -70,7 +77,7 @@
 						</table>
 					</div>
 
-					<button >ĐĂNG KÝ</button>
+					<button disabled class="btn_disable" id="btn_dk" >ĐĂNG KÝ</button>
 				</form>
 
 			</div>
@@ -97,6 +104,7 @@
 
 		// Đặt màu nền của hàng được nhấp vào thành màu tím nhạt
 		row.style.backgroundColor = "lavender";
+		removedisableButton();
 		var radioButtons = row.getElementsByTagName("input");
 		  for (var i = 0; i < radioButtons.length; i++) {
 		    if (radioButtons[i].type === "radio") {
@@ -108,6 +116,13 @@
 	}
 	function settingsMenuToggle() {
 		settingsmenu.classList.toggle("settings-menu-height");
+	}
+	function removedisableButton()
+	{
+		var sua = document.getElementById("btn_dk");
+		sua.disabled = false;
+		sua.classList.remove('btn_disable');
+		
 	}
 </script>
 </html>

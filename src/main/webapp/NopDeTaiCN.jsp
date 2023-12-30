@@ -71,9 +71,10 @@
 							<td class="columns-title">
 								<p>File Báo cáo</p> 
 							</td>
-							<td> <input name ="file" type="file" /></td>
+							<td> <input name ="file" type="file" accept=".docx, .doc"/></td>
 						</tr>
 					</table>
+					<input style="display: none" type = "text" name="MaDon" value = "${dangkydetai.getMaDon()}" > 
 					<input style="display: none" type = "text" name="MaDeTai" value = "${detai.getMaDeTai()}" > 
 					<input style="display: none" type = "text" name="MaThoiGian" value = "${dangkydetai.getMaThoiGian()}" > 
 					<input style="display: none" type = "text"  name="MaNopDeTai" value = "${nopdetai.getMaNopDeTai()}"> 
